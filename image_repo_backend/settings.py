@@ -84,22 +84,20 @@ WSGI_APPLICATION = 'image_repo_backend.wsgi.application'
 #     }
 # }
 
-# MySQL 配置示例 (需要先 pip install mysqlclient) [cite: 1, 5]
+# ---> Database (改为 MySQL 配置) <---
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'photox_db'),      # 数据库名
-        'USER': os.getenv('DB_USER', 'photox_user'),    # 数据库用户名
-        'PASSWORD': os.getenv('DB_PASSWORD', 'your_db_password'), # 数据库密码
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),        # 数据库主机
-        'PORT': os.getenv('DB_PORT', '3306'),            # 数据库端口
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        },
+        'ENGINE': 'django.db.backends.mysql',         # 修改 ENGINE
+        'NAME': os.environ.get('MYSQL_DATABASE'),     # 读取 MySQL 环境变量
+        'USER': os.environ.get('MYSQL_USER'),         # 读取 MySQL 环境变量
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD'), # 读取 MySQL 环境变量
+        'HOST': 'db',                                # Docker 服务名不变
+        'PORT': '3306',                             # MySQL 默认端口
+        # 'OPTIONS': { # 可选：如果需要指定字符集等
+        #     'charset': 'utf8mb4',
+        # },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
