@@ -157,6 +157,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10 # 每页默认显示10条
 }
 
+
 # Simple JWT 配置
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),      # Access Token 有效期1天
