@@ -1,6 +1,8 @@
 # Dockerfile
 
 FROM python:3.11-slim
+# 用 pytorch/pytorch:latest作为基础镜像
+#FROM pytorch/pytorch:latest
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -14,7 +16,9 @@ RUN apt-get update && apt-get install -y gcc default-libmysqlclient-dev pkg-conf
 # 安装 Python 依赖
 RUN pip install --upgrade pip
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
 
 # 复制项目代码
 COPY . /app/

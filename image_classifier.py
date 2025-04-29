@@ -16,35 +16,45 @@ class ImageClassifier:
 
 
     def predict(self,image_name):
-     # 图像预处理（自动匹配权重对应的预处理）
-      preprocess = models.ResNet50_Weights.DEFAULT.transforms()
-      image = Image.open(image_name).convert("RGB")
-      input_tensor = preprocess(image).unsqueeze(0)
+        # # 检查输入是 URL 还是本地文件路径
+        # if image_name.startswith('http://') or image_name.startswith('https://'):
+        #     # 从 URL 下载图像
+        #     response = requests.get(image_name)
+        #     # 二进制数据
+        #     image = Image.open(BytesIO(response.content)).convert("RGB")
+        # else:
+        #     # 从本地文件加载图像
+        #     image = Image.open(image_name).convert("RGB")
 
-     # 推理
+        # 图像预处理（自动匹配权重对应的预处理）
+        preprocess = models.ResNet50_Weights.DEFAULT.transforms()
+        image = Image.open(image_name).convert("RGB")
+        input_tensor = preprocess(image).unsqueeze(0)
 
-      with torch.no_grad():
-         output = self.model(input_tensor)
+        # 推理
 
-    # 解析结果
-      probabilities = torch.nn.functional.softmax(output[0], dim=0)
-      top_probs, top_indices = torch.topk(probabilities, 5)
+        with torch.no_grad():
+             output = self.model(input_tensor)
 
-    # 转换为Python数值
-      top_probs = top_probs.cpu().numpy()
-      top_indices = top_indices.cpu().numpy()
+        # 解析结果
+        probabilities = torch.nn.functional.softmax(output[0], dim=0)
+        top_probs, top_indices = torch.topk(probabilities, 5)
 
-    # 加载正确的类别文件
-      with open("imagenet_classes.txt", "r") as f:
-          categories = [s.strip() for s in f.readlines()]
+        # 转换为Python数值
+        top_probs = top_probs.cpu().numpy()
+        top_indices = top_indices.cpu().numpy()
+
+        # 加载正确的类别文件
+        with open("imagenet_classes.txt", "r") as f:
+            categories = [s.strip() for s in f.readlines()]
 
         # 验证类别数量
-      assert len(categories) == 1000, "类别文件必须包含 1000 个类别"
-    # 生成结果列表
-      results = [
-        (categories[idx], float(prob))
-        for idx, prob in zip(top_indices, top_probs)
-      ]
+        assert len(categories) == 1000, "类别文件必须包含 1000 个类别"
+        # 生成结果列表
+        results = [
+            (categories[idx], float(prob))
+            for idx, prob in zip(top_indices, top_probs)
+        ]
 
-      return results
+        return results
 

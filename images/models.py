@@ -13,11 +13,12 @@ class Image(models.Model):
     title = models.CharField(max_length=255, blank=True, verbose_name="标题")
     # image_url 存储在云存储的地址
     image_url = models.URLField(max_length=1024, verbose_name="图片URL")
-    # 使用 settings.AUTH_USER_MODEL 指向你的 CustomUser 模型
+    # 使用 settings.AUTH_USER_MODEL 指向 CustomUser 模型
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='images', on_delete=models.CASCADE, verbose_name="所属用户")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    # (可选) AI 分析生成的标签，可以用 ManyToManyField 或简单的 TextField/JSONField
-    tags = models.TextField(blank=True, null=True, verbose_name="AI标签") # 简单示例
+    # AI 分析生成的标签
+    tags = models.TextField(blank=True, null=True, verbose_name="AI标签")
+    is_public = models.BooleanField(default=False)  # 个人图片默认私有
 
     def __str__(self):
         return self.title or f"Image {self.id}"

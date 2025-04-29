@@ -3,8 +3,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 # 如果你使用 .env 文件管理敏感信息 (推荐)
-# from dotenv import load_dotenv
-# load_dotenv() # 加载 .env 文件
+from dotenv import load_dotenv
+load_dotenv() # 加载 .env 文件
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -207,6 +207,8 @@ CORS_ALLOWED_ORIGINS = [
 # CORS_ALLOW_CREDENTIALS = True
 
 
+
+
 # 七牛云配置 (从环境变量读取)
 QINIU_ACCESS_KEY = os.getenv('QINIU_ACCESS_KEY')
 QINIU_SECRET_KEY = os.getenv('QINIU_SECRET_KEY')
@@ -225,3 +227,4 @@ QINIU_BUCKET_URL = os.getenv('QINIU_BUCKET_URL') # 例如: http://your_bucket.ex
 # QINIU_SECRET_KEY=your_qiniu_sk
 # QINIU_BUCKET_NAME=your_qiniu_bucket_name
 # QINIU_BUCKET_URL=http://your_qiniu_bucket_domain
+

@@ -28,6 +28,9 @@ urlpatterns = [
     # Admin 后台
     path('admin/', admin.site.urls),
 
+    # path('api/v1/auth/', include('users.urls', namespace='users')),
+
+
     # --- API v1 URLs ---
     # 认证相关 (注册、登录、刷新 Token) -> 指向 users 应用的 urls.py
     # path('api/v1/auth/', include('users.urls.auth', namespace='auth')), # 建议将认证URL放入users/urls/auth.py
@@ -49,6 +52,7 @@ urlpatterns = [
     # 根路径重定向到 Swagger UI
     path('', RedirectView.as_view(url='/swagger/', permanent=False), name='index'),
     # Swagger/Redoc 访问路径
+
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
