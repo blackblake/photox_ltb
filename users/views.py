@@ -55,3 +55,21 @@ class CurrentUserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user) # request.user 就是当前登录的用户对象
         return Response({"code": 0, "message": "获取成功", "data": serializer.data})
+    
+    def put(self, request):
+        """
+        更新当前用户信息
+        """
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "code": 0,
+                "message": "更新成功",
+                "data": serializer.data
+            })
+        return Response({
+            "code": 1,
+            "message": "更新失败",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
