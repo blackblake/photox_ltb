@@ -134,7 +134,33 @@ class ImageDetailView(APIView):
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
+    # PUT 请求，修改图片信息
+    def put(self, request, image_id):
+        try:
+            image = Image.objects.get(id=image_id)
+        except Image.DoesNotExist:
+            return Response({"code": 1, "message": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        if image.user != request.user:
+            raise PermissionDenied("You do not have permission to edit this image.")
+
+        title = request.data.get('title', None)
+        is_public = request.data.get('is_public', None)
+
+        if title:
+            image.title = title
+        if is_public is not None:
+            image.is_public = is_public
+
+        image.save()
+
+        serializer = ImageSerializer(image)
+
+        return Response({
+            "code": 0,
+            "message": "Success",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
 
 
     def delete(self, request, image_id):
