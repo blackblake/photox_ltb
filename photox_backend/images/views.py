@@ -85,6 +85,10 @@ class ImageUploadView(APIView):
                 secret_key = settings.QINIU_SECRET_KEY
                 bucket_name = settings.QINIU_BUCKET_NAME
                 api_key = "sk-ff8f03a8cfbc03d7df75b7ddb6b1fb7f0bfc8116e02986306865aa9149741301"
+
+                colors = extract_colors_with_colorthief(tmp_file_path, num_colors=2)
+                 result = image_classification(tmp_file_path, api_key)
+                 category_id = result['category_id']
                 logger.info(f"七牛云配置信息 - Access Key: {access_key[:5]}..., Bucket: {bucket_name}")
 
                 if not all([access_key, secret_key, bucket_name]):
@@ -106,9 +110,7 @@ class ImageUploadView(APIView):
                     category = "其他"
                     logger.info("使用默认标签和分类")
 
-                 colors = extract_colors_with_colorthief(tmp_file_path, num_colors=2)
-                 result = image_classification(tmp_file_path, api_key)
-                 category_id = result['category_id']
+                 
 
                 # 上传图片到七牛云并获取外链 URL
                 try:
