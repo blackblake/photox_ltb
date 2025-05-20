@@ -213,7 +213,7 @@ CORS_ALLOWED_ORIGINS = [
 QINIU_ACCESS_KEY = os.getenv('QINIU_ACCESS_KEY')
 QINIU_SECRET_KEY = os.getenv('QINIU_SECRET_KEY')
 QINIU_BUCKET_NAME = os.getenv('QINIU_BUCKET_NAME')
-QINIU_BUCKET_URL = os.getenv('QINIU_BUCKET_URL') # 例如: http://your_bucket.example.com
+# QINIU_BUCKET_URL = os.getenv('QINIU_BUCKET_URL')
 
 # 如果需要使用 .env 文件，确保在项目根目录创建 .env 文件并写入类似内容:
 # DJANGO_SECRET_KEY=your_strong_secret_key
