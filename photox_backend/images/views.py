@@ -23,6 +23,8 @@ from .models import Image
 from .serializers import ImageUploadSerializer, ImageSerializer
 from save import upload_and_set_metadata  # 七牛云上传工具
 from .tasks import ai_image_analysis
+from ai_classify import image_classification
+from color import extract_colors_with_colorthief
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +84,7 @@ class ImageUploadView(APIView):
                 access_key = settings.QINIU_ACCESS_KEY
                 secret_key = settings.QINIU_SECRET_KEY
                 bucket_name = settings.QINIU_BUCKET_NAME
+                api_key = "sk-ff8f03a8cfbc03d7df75b7ddb6b1fb7f0bfc8116e02986306865aa9149741301"
                 logger.info(f"七牛云配置信息 - Access Key: {access_key[:5]}..., Bucket: {bucket_name}")
 
                 if not all([access_key, secret_key, bucket_name]):
@@ -103,6 +106,10 @@ class ImageUploadView(APIView):
                     category = "其他"
                     logger.info("使用默认标签和分类")
 
+                 colors = extract_colors_with_colorthief(tmp_file_path, num_colors=2)
+                 result = image_classification(tmp_file_path, api_key)
+                 category_id = result['category_id']
+
                 # 上传图片到七牛云并获取外链 URL
                 try:
                     logger.info("开始上传图片到七牛云...")
@@ -112,8 +119,8 @@ class ImageUploadView(APIView):
                         bucket_name=bucket_name,
                         file_path=tmp_file_path,  # 传递临时文件的绝对路径
                         key=file_name,  # 七牛云中的路径+文件名
-                        tags=tags,
-                        category=category
+                        category_id=category_id,
+                        colors=colors,
                     )
                     logger.info(f"上传结果 - URL: {image_url}")
                 except Exception as e:
@@ -154,7 +161,9 @@ class ImageUploadView(APIView):
                         title=serializer.validated_data.get('title', '') or safe_filename,
                         tags=tags_json,
                         user=request.user,  # 上传者为当前认证的用户
-                        is_public=serializer.validated_data.get('is_public', False)
+                        is_public=serializer.validated_data.get('is_public', False),
+                        colors=colors,
+                        category_id=category_id,
                     )
                     logger.info(f"数据库保存成功，图片ID: {image.id}")
 
