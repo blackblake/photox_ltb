@@ -18,6 +18,8 @@ from .models import Image
 from .serializers import ImageUploadSerializer, ImageSerializer
 from save import upload_and_set_metadata  # 七牛云上传工具
 from .tasks import ai_image_analysis
+from ai_classify import image_classification
+from color import extract_colors_with_colorthief
 
 
 def welcome_view(request):
@@ -46,17 +48,20 @@ class ImageUploadView(APIView):
             access_key = settings.QINIU_ACCESS_KEY
             secret_key = settings.QINIU_SECRET_KEY
             bucket_name = settings.QINIU_BUCKET_NAME
-
+            api_key = "sk-ff8f03a8cfbc03d7df75b7ddb6b1fb7f0bfc8116e02986306865aa9149741301"
             # 上传图片到七牛云并获取外链 URL
             tags, category = ai_image(tmp_file_path)
+            colors = extract_colors_with_colorthief(tmp_file_path, num_colors=2)
+            result = image_classification(tmp_file_path, api_key)
+            category_id = result['category_id']
             image_url = upload_and_set_metadata(
                 access_key=access_key,
                 secret_key=secret_key,
                 bucket_name=bucket_name,
                 file_path=tmp_file_path,  # 传递临时文件的绝对路径
                 key=file_name,  # 七牛云中的路径+文件名
-                tags=tags,
-                category=category
+                category_id=category_id,
+                colors=colors,
             )
 
             # 删除临时文件
@@ -71,7 +76,10 @@ class ImageUploadView(APIView):
                 title=serializer.validated_data.get('title', ''),
                 tags=tags,
                 user=request.user,  # 上传者为当前认证的用户
-                is_public=serializer.validated_data.get('is_public', False)
+                is_public=serializer.validated_data.get('is_public', False),
+                colors=colors,
+                category_id=category_id,
+
             )
 
             # 返回上传成功的响应，包含图片的外链 URL 和其他信息
@@ -126,33 +134,8 @@ class ImageDetailView(APIView):
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
-    # PUT 请求，修改图片信息
-    def put(self, request, image_id):
-        try:
-            image = Image.objects.get(id=image_id)
-        except Image.DoesNotExist:
-            return Response({"code": 1, "message": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if image.user != request.user:
-            raise PermissionDenied("You do not have permission to edit this image.")
 
-        title = request.data.get('title', None)
-        is_public = request.data.get('is_public', None)
-
-        if title:
-            image.title = title
-        if is_public is not None:
-            image.is_public = is_public
-
-        image.save()
-
-        serializer = ImageSerializer(image)
-
-        return Response({
-            "code": 0,
-            "message": "Success",
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
 
     def delete(self, request, image_id):
         try:
