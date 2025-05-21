@@ -180,8 +180,8 @@ def upload_and_set_metadata(access_key, secret_key, bucket_name, file_path, key,
     if response.status_code != 200:
         print("元数据设置失败:", response.text)
         return None
-
-    base_url = 'http://sv1luzogb.hd-bkt.clouddn.com'
+#     base_url = 'http://sv1luzogb.hd-bkt.clouddn.com'
+    base_url = 'http://swlqbhcct.hn-bkt.clouddn.com'
     return f'{base_url}/{key}'
 
 
